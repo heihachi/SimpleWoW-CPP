@@ -2,7 +2,6 @@ file(GLOB_RECURSE sources *.cpp *.h)
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/src/shared
-  ${CMAKE_SOURCE_DIR}/dep/config-plus/src
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -13,10 +12,9 @@ add_executable(SimpleWoW
 )
 
 target_link_libraries(SimpleWoW
-  configplus
 )
 
-add_dependencies(SimpleWoW configplus)
+#add_dependencies(SimpleWoW)
 
 #if( UNIX )
 #  install(TARGETS Tests DESTINATION bin)

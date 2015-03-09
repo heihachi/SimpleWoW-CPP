@@ -19,7 +19,7 @@ cmake_minimum_required(VERSION 2.8.4)
 #set(CMAKE_INSTALL_RPATH_USE_LINK_PATH 1)
 
 # set macro-directory
-#set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/macros")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/macros")
 
 # build in Release-mode by default if not explicitly set
 if( NOT CMAKE_BUILD_TYPE )
@@ -30,7 +30,7 @@ include(CheckCXXSourceRuns)
 include(CheckIncludeFiles)
 
 # set default buildoptions and print them
-#include(cmake/options.cmake)
+include(cmake/options.cmake)
 
 # turn off PCH totally if enabled (hidden setting, mainly for devs)
 #if( NOPCH )
@@ -38,7 +38,9 @@ include(CheckIncludeFiles)
 #  set(USE_SCRIPTPCH 0)
 #endif()
 
-#include(CheckPlatform)
+include(CheckPlatform)
+
+#include(ConfigureBoost)
 
 if(NOT WITHOUT_GIT)
   find_package(Git)

@@ -1,49 +1,65 @@
-#include <cstdio>
-#include <iostream>
-#include <fstream>
-using namespace std;
+#include "boost/program_options.hpp" 
 
-#include <Config.h>
+#include <iostream> 
+#include <string> 
 
-int main() {
-    Section *conf = parseConfig("test.txt");
+namespace
+{
+    const size_t ERROR_IN_COMMAND_LINE = 1;
+    const size_t SUCCESS = 0;
+    const size_t ERROR_UNHANDLED_EXCEPTION = 2;
 
-    cout << "----------------------"<<endl;
-    if (conf == NULL) {
-        cerr << "configuration is empty" << endl;
-        return 1;
+} // namespace 
+
+int main(int argc, char** argv)
+{
+    try
+    {
+        /** Define and parse the program options
+        */
+        namespace po = boost::program_options;
+        po::options_description desc("Options");
+        desc.add_options()
+            ("help", "Print help messages")
+            ("add", "additional options")
+            ("like", "this");
+
+        po::variables_map vm;
+        try
+        {
+            po::store(po::parse_command_line(argc, argv, desc),
+                vm); // can throw 
+
+            /** --help option
+            */
+            if (vm.count("help"))
+            {
+                std::cout << "Basic Command Line Parameter App" << std::endl
+                    << desc << std::endl;
+                return SUCCESS;
+            }
+
+            po::notify(vm); // throws on error, so do after help in case 
+            // there are any problems 
+        }
+        catch (po::error& e)
+        {
+            std::cerr << "ERROR: " << e.what() << std::endl << std::endl;
+            std::cerr << desc << std::endl;
+            return ERROR_IN_COMMAND_LINE;
+        }
+
+        // application code here // 
+
     }
-    std::ofstream Out ("result.cfg",std::ios::out | std::ios::binary);
-    printSection(Out, conf); //print configuration into result.cfg file
+    catch (std::exception& e)
+    {
+        std::cerr << "Unhandled Exception reached the top of main: "
+            << e.what() << ", application will now exit" << std::endl;
+        return ERROR_UNHANDLED_EXCEPTION;
 
-    long a = 0;
-    bool xxx = false;
-    std::string str = "";
-    std::string rules_name;
-    cout << "--- Initialize variables ---" << endl;
-
-    //This is the safe way to initialize some of our variables
-    SetupVars set_vars;
-    set_vars.Add("str1", 			//config variable
-            new SetupBaseType_string(str),  //init functor
-            true,                           //if undefined config var is it fatality or no
-            "test");			//default value if there is no the variable in config file
-    set_vars.Add("a", new SetupBaseType_long(a), false, "-1");
-    set_vars.Add("xxx", new SetupBaseType_yesno(xxx), false, "yes");
-    set_vars.Add("name", new SetupBaseType_string(rules_name), false, "ZZZZ");
-    try {
-        set_vars.Set(conf);
-        //conf is a section pointer from which we should init our variables.
-    } catch (errGetVal &er_val) {
-        cerr << "variable '" << er_val.key
-                << "' wasn't define in configuration" << endl;
     }
 
-    cout << "--- The result of initialization ---" << endl;
-    cout << "int a = " << a << endl
-            << "bool xxx = " << xxx << endl
-            << "string str = " << str << endl
-            << "string rules_name = " << rules_name << endl;
+    return SUCCESS;
 
-    return 0;
-}
+} // main 

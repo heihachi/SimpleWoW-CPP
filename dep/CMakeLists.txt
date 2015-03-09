@@ -1,1 +1,3 @@
-add_subdirectory(config-plus)
+
+# have this last
+message("Dependencies Completed!")
